@@ -4,10 +4,11 @@ import { createClient } from "@/lib/supabase/server";
 import { Navbar } from "@/components/layout/Navbar";
 import { formatPrice } from "@/lib/utils";
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const supabase = await createClient();
-  const { data } = await supabase.from("clubs").select("name").eq("id", params.id).single();
-  return { title: data?.name ?? "Club" };
+  const { data } = await supabase.from("clubs").select("name").eq("id", id).single();
+  return { title: (data as any)?.name ?? "Club" };
 }
 
 const surfaceLabel: Record<string, string> = {
@@ -17,20 +18,21 @@ const surfaceLabel: Record<string, string> = {
   sand: "Sand",
 };
 
-export default async function ClubDetailPage({ params }: { params: { id: string } }) {
+export default async function ClubDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const supabase = await createClient();
 
-  const { data: club } = await supabase
+  const { data: clubRaw } = await supabase
     .from("clubs")
     .select("*, courts(*), members:club_members(role)")
-    .eq("id", params.id)
+    .eq("id", id)
     .eq("is_active", true)
     .single();
 
-  if (!club) notFound();
-
-  const courts = (club as any).courts ?? [];
-  const memberCount = (club as any).members?.length ?? 0;
+  if (!clubRaw) notFound();
+  const club = clubRaw as any;
+  const courts = club.courts ?? [];
+  const memberCount = club.members?.length ?? 0;
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
@@ -52,22 +54,20 @@ export default async function ClubDetailPage({ params }: { params: { id: string 
                   <p className="text-gray-300 mt-3 max-w-xl leading-relaxed">{club.description}</p>
                 )}
               </div>
-
               <div className="flex flex-col gap-3">
                 {club.phone && (
-                  <a href={`tel:${club.phone}`} className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors">
+                  <a href={`tel:${club.phone}`} className="text-sm text-gray-400 hover:text-white transition-colors">
                     📞 {club.phone}
                   </a>
                 )}
                 {club.email && (
-                  <a href={`mailto:${club.email}`} className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors">
+                  <a href={`mailto:${club.email}`} className="text-sm text-gray-400 hover:text-white transition-colors">
                     ✉️ {club.email}
                   </a>
                 )}
               </div>
             </div>
 
-            {/* Stats */}
             <div className="flex flex-wrap gap-6 mt-8 pt-8 border-t border-white/5">
               {[
                 { value: courts.length, label: "Courts" },
@@ -84,34 +84,30 @@ export default async function ClubDetailPage({ params }: { params: { id: string 
         </div>
 
         {/* Courts */}
-        <div>
-          <h2 className="text-2xl font-black mb-5">Courts</h2>
-          {courts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {courts.map((court: any) => (
-                <Link
-                  key={court.id}
-                  href={`/courts/${court.id}`}
-                  className="group bg-gray-900 border border-white/5 rounded-2xl overflow-hidden hover:border-brand-500/50 hover:shadow-lg hover:shadow-brand-900/30 transition-all"
-                >
-                  <div className="h-36 bg-gradient-to-br from-brand-950 to-gray-800 flex items-center justify-center relative">
-                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(22,163,74,0.15),transparent)]" />
-                    <span className="text-4xl relative z-10">🎾</span>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-bold text-white">{court.name}</h3>
-                    <p className="text-xs text-gray-500 mt-1">{surfaceLabel[court.surface] ?? court.surface} · {court.type}</p>
-                    <p className="text-brand-400 font-black mt-2">
-                      {formatPrice(court.price_per_hour, court.currency)}/hr
-                    </p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-600">No courts listed yet.</p>
-          )}
-        </div>
+        <h2 className="text-2xl font-black mb-5">Courts</h2>
+        {courts.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {courts.map((court: any) => (
+              <Link
+                key={court.id}
+                href={`/courts/${court.id}`}
+                className="group bg-gray-900 border border-white/5 rounded-2xl overflow-hidden hover:border-brand-500/50 hover:shadow-lg hover:shadow-brand-900/30 transition-all"
+              >
+                <div className="h-36 bg-gradient-to-br from-brand-950 to-gray-800 flex items-center justify-center relative">
+                  <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(22,163,74,0.15),transparent)]" />
+                  <span className="text-4xl relative z-10">🎾</span>
+                </div>
+                <div className="p-4">
+                  <h3 className="font-bold text-white">{court.name}</h3>
+                  <p className="text-xs text-gray-500 mt-1">{surfaceLabel[court.surface] ?? court.surface} · {court.type}</p>
+                  <p className="text-brand-400 font-black mt-2">{formatPrice(court.price_per_hour, court.currency)}/hr</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-600">No courts listed yet.</p>
+        )}
       </div>
     </div>
   );

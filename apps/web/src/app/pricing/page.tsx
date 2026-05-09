@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
+import { Navbar } from "@/components/layout/Navbar";
 
 export const metadata = { title: "Pricing" };
 
@@ -71,72 +72,60 @@ const plans = [
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-white">
-      {/* Nav */}
-      <nav className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-        <Link href="/" className="text-xl font-bold text-brand-600">
-          PaddleMate
-        </Link>
-        <div className="flex items-center gap-4">
-          <Link href="/courts" className="text-sm text-gray-600 hover:text-gray-900">Courts</Link>
-          <Link href="/matches" className="text-sm text-gray-600 hover:text-gray-900">Matches</Link>
-          <Link href="/clubs" className="text-sm text-gray-600 hover:text-gray-900">Clubs</Link>
-          <Link href="/auth/login" className="text-sm bg-brand-600 text-white px-4 py-2 rounded-lg hover:bg-brand-700 transition-colors">
-            Sign in
-          </Link>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-gray-950 text-white">
+      <Navbar />
 
-      <div className="max-w-6xl mx-auto px-6 py-16">
+      <div className="max-w-6xl mx-auto px-6 pt-28 pb-16">
         {/* Header */}
         <div className="text-center mb-14">
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900 mb-4">
-            Pricing plans
+          <p className="text-brand-400 text-sm font-semibold uppercase tracking-widest mb-4">Pricing</p>
+          <h1 className="text-5xl font-black tracking-tight mb-4">
+            Plans for every club
           </h1>
-          <p className="text-gray-500 text-lg">
-            Flexible plans for every club — no hidden fees, cancel anytime.
+          <p className="text-gray-400 text-lg max-w-xl mx-auto">
+            No hidden fees, no setup costs, cancel anytime.
           </p>
-          <div className="inline-flex items-center gap-2 mt-4 bg-brand-50 text-brand-700 text-sm font-medium px-4 py-2 rounded-full">
-            Up to 40% cheaper than the competition
+          <div className="inline-flex items-center gap-2 mt-5 bg-brand-950/60 border border-brand-800 text-brand-400 text-sm font-semibold px-5 py-2 rounded-full">
+            🏆 Up to 40% cheaper than Playtomic
           </div>
         </div>
 
-        {/* Plans */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
+        {/* Plans grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 items-start">
           {plans.map((plan) => (
             <div
               key={plan.name}
               className={`relative rounded-2xl border p-6 flex flex-col ${
                 plan.highlight
-                  ? "border-brand-500 shadow-lg shadow-brand-100 bg-brand-600 text-white"
-                  : "border-gray-200 bg-white text-gray-900"
+                  ? "border-brand-500 bg-brand-600 shadow-2xl shadow-brand-900/50"
+                  : "border-white/5 bg-gray-900"
               }`}
             >
               {plan.badge && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-900 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wide">
                   {plan.badge}
                 </span>
               )}
 
               <div className="mb-6">
-                <h2 className="text-xl font-bold mb-1">{plan.name}</h2>
+                <h2 className="text-xl font-black mb-1 text-white">{plan.name}</h2>
                 <p className={`text-sm mb-4 ${plan.highlight ? "text-brand-100" : "text-gray-500"}`}>
                   {plan.description}
                 </p>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-bold">€{plan.price}</span>
-                  <span className={`text-sm ${plan.highlight ? "text-brand-200" : "text-gray-400"}`}>
-                    /mo (VAT excl.)
+                  <span className="text-4xl font-black text-white">€{plan.price}</span>
+                  <span className={`text-sm ${plan.highlight ? "text-brand-200" : "text-gray-600"}`}>
+                    /mo
                   </span>
                 </div>
               </div>
 
               <Link
-                href="/auth/signup"
-                className={`block text-center py-2.5 rounded-lg font-medium text-sm mb-6 transition-colors ${
+                href="/signup"
+                className={`block text-center py-2.5 rounded-xl font-bold text-sm mb-6 transition-colors ${
                   plan.highlight
-                    ? "bg-white text-brand-600 hover:bg-brand-50"
-                    : "bg-brand-600 text-white hover:bg-brand-700"
+                    ? "bg-white text-brand-600 hover:bg-gray-100"
+                    : "bg-brand-500 text-white hover:bg-brand-400"
                 }`}
               >
                 Get started
@@ -144,15 +133,9 @@ export default function PricingPage() {
 
               <ul className="space-y-3 flex-1">
                 {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-2 text-sm">
-                    <Check
-                      className={`w-4 h-4 mt-0.5 shrink-0 ${
-                        plan.highlight ? "text-brand-200" : "text-brand-600"
-                      }`}
-                    />
-                    <span className={plan.highlight ? "text-brand-50" : "text-gray-600"}>
-                      {feature}
-                    </span>
+                  <li key={feature} className="flex items-start gap-2.5 text-sm">
+                    <Check className={`w-4 h-4 mt-0.5 shrink-0 ${plan.highlight ? "text-brand-200" : "text-brand-500"}`} />
+                    <span className={plan.highlight ? "text-brand-50" : "text-gray-400"}>{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -160,9 +143,8 @@ export default function PricingPage() {
           ))}
         </div>
 
-        {/* Footer note */}
-        <p className="text-center text-gray-400 text-sm mt-10">
-          All prices exclude VAT. Monthly billing. No setup fees.
+        <p className="text-center text-gray-600 text-sm mt-10">
+          All prices exclude VAT · Monthly billing · No setup fees
         </p>
       </div>
     </div>

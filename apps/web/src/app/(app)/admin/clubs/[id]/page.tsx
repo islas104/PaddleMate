@@ -22,31 +22,32 @@ function statusBadge(status: string) {
   return map[status] ?? "bg-gray-800 text-gray-400 border-gray-700";
 }
 
-export default async function ClubAdminPage({ params }: { params: { id: string } }) {
+export default async function ClubAdminPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  // Verify user is owner/admin of this club
   const { data: membership } = await supabase
     .from("club_members")
     .select("role")
-    .eq("club_id", params.id)
+    .eq("club_id", id)
     .eq("user_id", user.id)
     .single();
 
-  if (!membership || !["owner", "admin"].includes(membership.role)) notFound();
+  if (!membership || !["owner", "admin"].includes((membership as any).role)) notFound();
 
-  const [{ data: club }, { data: courts }, { data: bookingsRaw }] = await Promise.all([
-    supabase.from("clubs").select("*").eq("id", params.id).single(),
-    supabase.from("courts").select("*").eq("club_id", params.id).order("name"),
+  const [{ data: clubRaw }, { data: courts }, { data: bookingsRaw }] = await Promise.all([
+    supabase.from("clubs").select("*").eq("id", id).single(),
+    supabase.from("courts").select("*").eq("club_id", id).order("name"),
     supabase
       .from("bookings")
       .select("*, court:courts!inner(name, club_id), user:profiles(full_name, email)")
-      .eq("courts.club_id", params.id)
+      .eq("courts.club_id", id)
       .order("starts_at", { ascending: false })
       .limit(50),
   ]);
+  const club = clubRaw as any;
 
   if (!club) notFound();
 
@@ -69,7 +70,7 @@ export default async function ClubAdminPage({ params }: { params: { id: string }
             <p className="text-gray-500 text-sm mt-0.5">{club.address}, {club.city}</p>
           </div>
           <Link
-            href={`/clubs/${params.id}`}
+            href={`/clubs/${id}`}
             className="text-sm text-gray-400 hover:text-white border border-white/10 px-4 py-2 rounded-xl transition-colors"
           >
             View public page →

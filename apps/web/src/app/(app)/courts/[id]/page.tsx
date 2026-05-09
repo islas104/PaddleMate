@@ -3,9 +3,10 @@ import { createClient } from "@/lib/supabase/server";
 import { Navbar } from "@/components/layout/Navbar";
 import { BookingPanel } from "@/components/booking/BookingPanel";
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const supabase = await createClient();
-  const { data } = await supabase.from("courts").select("name").eq("id", params.id).single();
+  const { data } = await supabase.from("courts").select("name").eq("id", id).single();
   return { title: data?.name ?? "Court" };
 }
 
@@ -16,16 +17,19 @@ const surfaceLabel: Record<string, string> = {
   sand: "Sand",
 };
 
-export default async function CourtDetailPage({ params }: { params: { id: string } }) {
+export default async function CourtDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const supabase = await createClient();
-  const { data: court } = await supabase
+
+  const { data: courtRaw } = await supabase
     .from("courts")
     .select("*, club:clubs(id, name, address, city, country, phone, email)")
-    .eq("id", params.id)
+    .eq("id", id)
     .eq("is_active", true)
     .single();
 
-  if (!court) notFound();
+  if (!courtRaw) notFound();
+  const court = courtRaw as any;
 
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -34,7 +38,6 @@ export default async function CourtDetailPage({ params }: { params: { id: string
       <Navbar />
 
       <div className="max-w-5xl mx-auto px-6 pt-28 pb-16">
-        {/* Breadcrumb */}
         <p className="text-sm text-gray-500 mb-6">
           <a href="/courts" className="hover:text-brand-400 transition-colors">Courts</a>
           <span className="mx-2">›</span>
@@ -42,22 +45,18 @@ export default async function CourtDetailPage({ params }: { params: { id: string
         </p>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left — court info */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Hero */}
             <div className="h-64 rounded-2xl bg-gradient-to-br from-brand-950 via-gray-900 to-gray-800 flex items-center justify-center relative overflow-hidden border border-white/5">
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(22,163,74,0.2),transparent)]" />
               <span className="text-7xl relative z-10">🎾</span>
             </div>
 
-            {/* Name & club */}
             <div>
               <h1 className="text-3xl font-black">{court.name}</h1>
-              <p className="text-brand-400 font-semibold mt-1">{(court as any).club?.name}</p>
-              <p className="text-gray-500 text-sm mt-0.5">{(court as any).club?.address}, {(court as any).club?.city}</p>
+              <p className="text-brand-400 font-semibold mt-1">{court.club?.name}</p>
+              <p className="text-gray-500 text-sm mt-0.5">{court.club?.address}, {court.club?.city}</p>
             </div>
 
-            {/* Details */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {[
                 { label: "Surface", value: surfaceLabel[court.surface] ?? court.surface },
@@ -72,18 +71,16 @@ export default async function CourtDetailPage({ params }: { params: { id: string
               ))}
             </div>
 
-            {/* Club contact */}
             <div className="bg-gray-900 border border-white/5 rounded-2xl p-5">
               <h3 className="font-bold text-white mb-3">Club info</h3>
               <div className="space-y-2 text-sm text-gray-400">
-                {(court as any).club?.phone && <p>📞 {(court as any).club.phone}</p>}
-                {(court as any).club?.email && <p>✉️ {(court as any).club.email}</p>}
-                <p>📍 {(court as any).club?.address}, {(court as any).club?.city}, {(court as any).club?.country}</p>
+                {court.club?.phone && <p>📞 {court.club.phone}</p>}
+                {court.club?.email && <p>✉️ {court.club.email}</p>}
+                <p>📍 {court.club?.address}, {court.club?.city}, {court.club?.country}</p>
               </div>
             </div>
           </div>
 
-          {/* Right — booking panel */}
           <div className="lg:col-span-1">
             <BookingPanel
               courtId={court.id}

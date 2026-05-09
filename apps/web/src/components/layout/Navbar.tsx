@@ -1,6 +1,22 @@
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
 
-export function Navbar() {
+export async function Navbar() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  let profile: { full_name: string } | null = null;
+  if (user) {
+    const { data } = await supabase
+      .from("profiles")
+      .select("full_name")
+      .eq("id", user.id)
+      .single();
+    profile = data as any;
+  }
+
+  const initial = profile?.full_name?.[0]?.toUpperCase() ?? user?.email?.[0]?.toUpperCase() ?? "?";
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-gray-950/80 backdrop-blur-md">
       <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -16,15 +32,35 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Link href="/login" className="text-sm text-gray-400 hover:text-white transition-colors">
-            Sign in
-          </Link>
-          <Link
-            href="/signup"
-            className="text-sm bg-brand-500 hover:bg-brand-400 text-white font-semibold px-4 py-2 rounded-lg transition-colors"
-          >
-            Get started
-          </Link>
+          {user ? (
+            <>
+              <Link
+                href="/dashboard"
+                className="text-sm text-gray-400 hover:text-white transition-colors hidden md:block"
+              >
+                Dashboard
+              </Link>
+              <Link
+                href="/dashboard"
+                className="w-9 h-9 rounded-full bg-brand-500 flex items-center justify-center text-sm font-black text-white hover:bg-brand-400 transition-colors"
+                title={profile?.full_name ?? user.email}
+              >
+                {initial}
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className="text-sm text-gray-400 hover:text-white transition-colors">
+                Sign in
+              </Link>
+              <Link
+                href="/signup"
+                className="text-sm bg-brand-500 hover:bg-brand-400 text-white font-semibold px-4 py-2 rounded-lg transition-colors"
+              >
+                Get started
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </nav>

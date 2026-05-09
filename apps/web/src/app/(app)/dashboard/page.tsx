@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Navbar } from "@/components/layout/Navbar";
+import { CancelBookingButton } from "@/components/booking/CancelBookingButton";
 
 export const metadata = { title: "Dashboard" };
 
@@ -37,6 +38,7 @@ export default async function DashboardPage() {
       .limit(20),
   ]);
 
+  const p = profile as any;
   const bookings = (bookingsRaw as any[]) ?? [];
   const upcoming = bookings.filter((b) => new Date(b.starts_at) > new Date() && b.status !== "cancelled");
   const past = bookings.filter((b) => new Date(b.starts_at) <= new Date() || b.status === "cancelled");
@@ -48,14 +50,14 @@ export default async function DashboardPage() {
       <div className="max-w-4xl mx-auto px-6 pt-28 pb-16">
         {/* Profile header */}
         <div className="flex items-center gap-5 mb-10">
-          <div className="w-16 h-16 rounded-2xl bg-brand-500 flex items-center justify-center text-2xl font-black">
-            {profile?.full_name?.[0] ?? user.email?.[0]?.toUpperCase()}
+          <div className="w-16 h-16 rounded-2xl bg-brand-500 flex items-center justify-center text-2xl font-black shrink-0">
+            {p?.full_name?.[0] ?? user.email?.[0]?.toUpperCase()}
           </div>
           <div>
-            <h1 className="text-2xl font-black">{profile?.full_name ?? "Player"}</h1>
+            <h1 className="text-2xl font-black">{p?.full_name ?? "Player"}</h1>
             <p className="text-gray-500 text-sm">{user.email}</p>
             <span className="inline-block mt-1 text-xs bg-brand-950/60 text-brand-400 border border-brand-800 px-2 py-0.5 rounded-full capitalize">
-              {profile?.skill_level ?? "beginner"}
+              {p?.skill_level ?? "beginner"}
             </span>
           </div>
         </div>
@@ -74,28 +76,29 @@ export default async function DashboardPage() {
           ))}
         </div>
 
-        {/* Upcoming bookings */}
+        {/* Upcoming */}
         <section className="mb-10">
           <h2 className="text-xl font-black mb-4">Upcoming bookings</h2>
           {upcoming.length > 0 ? (
             <div className="space-y-3">
               {upcoming.map((b) => (
                 <div key={b.id} className="bg-gray-900 border border-white/5 rounded-2xl p-5 flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-4 min-w-0">
                     <div className="w-12 h-12 rounded-xl bg-brand-950/60 border border-brand-800/50 flex items-center justify-center text-xl shrink-0">
                       🎾
                     </div>
-                    <div>
-                      <p className="font-bold text-white">{b.court?.name}</p>
+                    <div className="min-w-0">
+                      <p className="font-bold text-white truncate">{b.court?.name}</p>
                       <p className="text-sm text-gray-500">{b.court?.club?.name} · {b.court?.club?.city}</p>
                       <p className="text-xs text-brand-400 mt-0.5">{formatSlot(b.starts_at)}</p>
                     </div>
                   </div>
-                  <div className="text-right shrink-0">
+                  <div className="text-right shrink-0 flex flex-col items-end gap-2">
                     <span className={`text-xs border px-2.5 py-1 rounded-full capitalize ${statusBadge(b.status)}`}>
                       {b.status}
                     </span>
-                    <p className="text-sm font-black text-white mt-1">£{b.total_price}</p>
+                    <p className="text-sm font-black text-white">£{b.total_price}</p>
+                    <CancelBookingButton bookingId={b.id} />
                   </div>
                 </div>
               ))}
@@ -110,15 +113,15 @@ export default async function DashboardPage() {
           )}
         </section>
 
-        {/* Past bookings */}
+        {/* Past */}
         {past.length > 0 && (
           <section>
             <h2 className="text-xl font-black mb-4 text-gray-500">Past bookings</h2>
             <div className="space-y-3">
               {past.map((b) => (
                 <div key={b.id} className="bg-gray-900/50 border border-white/5 rounded-2xl p-5 flex items-center justify-between gap-4 opacity-60">
-                  <div>
-                    <p className="font-bold text-white">{b.court?.name}</p>
+                  <div className="min-w-0">
+                    <p className="font-bold text-white truncate">{b.court?.name}</p>
                     <p className="text-sm text-gray-500">{b.court?.club?.name}</p>
                     <p className="text-xs text-gray-600 mt-0.5">{formatSlot(b.starts_at)}</p>
                   </div>
