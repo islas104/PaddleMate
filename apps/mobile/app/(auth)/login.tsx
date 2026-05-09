@@ -1,15 +1,8 @@
 import { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import { supabase } from "@/lib/supabase";
+import { Colors } from "@/constants/colors";
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -28,63 +21,66 @@ export default function LoginScreen() {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      <Text style={styles.logo}>PaddleMate</Text>
-      <Text style={styles.subtitle}>Sign in to continue</Text>
+    <KeyboardAvoidingView style={s.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+      <View style={s.logoWrap}>
+        <Text style={s.logoEmoji}>🎾</Text>
+        <Text style={s.logo}>PaddleMate</Text>
+        <Text style={s.subtitle}>Sign in to continue</Text>
+      </View>
 
-      <View style={styles.form}>
+      <View style={s.form}>
         <TextInput
-          style={styles.input}
+          style={s.input}
           placeholder="Email"
           keyboardType="email-address"
           autoCapitalize="none"
           value={email}
           onChangeText={setEmail}
-          placeholderTextColor="#9ca3af"
+          placeholderTextColor={Colors.textMuted}
         />
         <TextInput
-          style={styles.input}
+          style={s.input}
           placeholder="Password"
           secureTextEntry
           value={password}
           onChangeText={setPassword}
-          placeholderTextColor="#9ca3af"
+          placeholderTextColor={Colors.textMuted}
         />
 
-        {error && <Text style={styles.error}>{error}</Text>}
+        {error && <Text style={s.error}>{error}</Text>}
 
-        <TouchableOpacity style={styles.btn} onPress={handleLogin} disabled={loading}>
-          <Text style={styles.btnText}>{loading ? "Signing in…" : "Sign in"}</Text>
+        <TouchableOpacity style={[s.btn, loading && s.btnDisabled]} onPress={handleLogin} disabled={loading}>
+          <Text style={s.btnText}>{loading ? "Signing in…" : "Sign in"}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => router.push("/(auth)/signup")}>
-          <Text style={styles.link}>No account? Sign up</Text>
+        <TouchableOpacity onPress={() => router.push("/(auth)/signup" as any)}>
+          <Text style={s.link}>No account? Sign up</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f9fafb", justifyContent: "center", paddingHorizontal: 24 },
-  logo: { fontSize: 32, fontWeight: "800", color: "#16a34a", textAlign: "center", marginBottom: 8 },
-  subtitle: { fontSize: 15, color: "#6b7280", textAlign: "center", marginBottom: 32 },
+const s = StyleSheet.create({
+  container: { flex: 1, backgroundColor: Colors.bg, justifyContent: "center", paddingHorizontal: 24 },
+  logoWrap: { alignItems: "center", marginBottom: 40 },
+  logoEmoji: { fontSize: 52, marginBottom: 12 },
+  logo: { fontSize: 34, fontWeight: "900", color: Colors.text, letterSpacing: 0.5 },
+  subtitle: { fontSize: 15, color: Colors.textMuted, marginTop: 6 },
   form: { gap: 12 },
   input: {
-    backgroundColor: "#fff",
+    backgroundColor: Colors.surface,
     borderWidth: 1,
-    borderColor: "#e5e7eb",
-    borderRadius: 12,
+    borderColor: Colors.border,
+    borderRadius: 14,
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingVertical: 15,
     fontSize: 15,
-    color: "#111827",
+    color: Colors.text,
   },
-  error: { color: "#dc2626", fontSize: 13, textAlign: "center" },
-  btn: { backgroundColor: "#16a34a", borderRadius: 12, paddingVertical: 15, alignItems: "center" },
-  btnText: { color: "#fff", fontSize: 16, fontWeight: "700" },
-  link: { color: "#16a34a", textAlign: "center", fontSize: 14, marginTop: 4 },
+  error: { color: "#f87171", fontSize: 13, textAlign: "center" },
+  btn: { backgroundColor: Colors.brand, borderRadius: 14, paddingVertical: 16, alignItems: "center" },
+  btnDisabled: { opacity: 0.5 },
+  btnText: { color: "#fff", fontSize: 16, fontWeight: "800" },
+  link: { color: Colors.brand, textAlign: "center", fontSize: 14, marginTop: 4 },
 });
