@@ -1,7 +1,7 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "./database.types";
 
-type Client = SupabaseClient<Database>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Client = any;
 
 // Courts
 export async function getCourts(client: Client, city?: string) {

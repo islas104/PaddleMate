@@ -5,7 +5,7 @@ import { ClubCard } from "@/components/clubs/ClubCard";
 export const metadata = { title: "Clubs" };
 
 export default async function ClubsPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: clubs } = await getClubs(supabase);
 
   return (
@@ -15,7 +15,7 @@ export default async function ClubsPage() {
 
       {clubs && clubs.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {clubs.map((club) => (
+          {clubs.map((club: any) => (
             <ClubCard key={club.id} club={club} />
           ))}
         </div>

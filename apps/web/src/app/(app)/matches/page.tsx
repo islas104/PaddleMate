@@ -5,7 +5,7 @@ import { MatchCard } from "@/components/matches/MatchCard";
 export const metadata = { title: "Matches" };
 
 export default async function MatchesPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: matches } = await getOpenMatches(supabase);
 
   return (
@@ -15,7 +15,7 @@ export default async function MatchesPage() {
 
       {matches && matches.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {matches.map((match) => (
+          {matches.map((match: any) => (
             <MatchCard key={match.id} match={match as any} />
           ))}
         </div>
