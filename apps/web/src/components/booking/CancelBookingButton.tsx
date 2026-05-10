@@ -13,7 +13,7 @@ export function CancelBookingButton({ bookingId }: { bookingId: string }) {
     if (!confirm) { setConfirm(true); return; }
     setLoading(true);
     const supabase = createClient();
-    await supabase.from("bookings").update({ status: "cancelled" }).eq("id", bookingId);
+    await (supabase.from("bookings") as any).update({ status: "cancelled" }).eq("id", bookingId);
     router.refresh();
   }
 

@@ -59,7 +59,7 @@ export function BookingPanel({ courtId, pricePerHour, currency, isLoggedIn }: Pr
   }, [date, courtId]);
 
   async function handleBook() {
-    if (!isLoggedIn) { router.push("/login"); return; }
+    if (!isLoggedIn) { router.push(`/login?next=${encodeURIComponent(window.location.pathname)}`); return; }
     if (!slot) return;
 
     setLoading(true);

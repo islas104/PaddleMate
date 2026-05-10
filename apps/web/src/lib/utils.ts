@@ -5,8 +5,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatPrice(amount: number, currency = "EUR") {
-  return new Intl.NumberFormat("en-IE", { style: "currency", currency }).format(amount);
+export function formatPrice(amount: number, currency = "GBP") {
+  return new Intl.NumberFormat("en-GB", { style: "currency", currency }).format(amount);
 }
 
 export function formatDatetime(iso: string) {
