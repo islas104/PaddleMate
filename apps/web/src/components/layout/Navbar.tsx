@@ -29,6 +29,9 @@ export async function Navbar() {
           <Link href="/matches" className="text-sm text-gray-400 hover:text-white transition-colors">Matches</Link>
           <Link href="/clubs" className="text-sm text-gray-400 hover:text-white transition-colors">Clubs</Link>
           <Link href="/pricing" className="text-sm text-gray-400 hover:text-white transition-colors">Pricing</Link>
+          <Link href="/for-venues" className="text-sm text-brand-400 hover:text-brand-300 font-semibold transition-colors">
+            For venues ↗
+          </Link>
         </div>
 
         <div className="flex items-center gap-3">

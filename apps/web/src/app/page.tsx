@@ -36,6 +36,13 @@ export default function HomePage() {
             </Link>
           </div>
 
+          {/* Venue CTA */}
+          <div className="mt-8">
+            <Link href="/for-venues" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-brand-400 transition-colors">
+              🏟️ Own a paddle venue? <span className="text-brand-400 font-semibold underline underline-offset-2">List your courts for free →</span>
+            </Link>
+          </div>
+
           {/* Stats */}
           <div className="flex flex-wrap items-center justify-center gap-12 mt-20">
             {[
@@ -98,33 +105,42 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* For clubs CTA */}
+      {/* For venues CTA */}
       <section className="border-t border-white/5 bg-gray-900/30">
-        <div className="max-w-5xl mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-          <div>
-            <p className="text-brand-400 text-sm font-semibold uppercase tracking-widest mb-3">For club owners</p>
-            <h2 className="text-4xl font-black mb-4">Grow your club.<br />Not your costs.</h2>
-            <p className="text-gray-400 leading-relaxed mb-6">
-              Get a full management dashboard — courts, bookings, members, revenue — all in one place. Up to 40% cheaper than Playtomic.
-            </p>
-            <Link href="/pricing" className="inline-block bg-brand-500 hover:bg-brand-400 text-white font-bold px-6 py-3 rounded-xl transition-colors">
-              See pricing →
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            {[
-              { icon: "📅", label: "Booking management" },
-              { icon: "💰", label: "Revenue tracking" },
-              { icon: "👥", label: "Member profiles" },
-              { icon: "🎾", label: "Court scheduling" },
-              { icon: "📊", label: "Reports & analytics" },
-              { icon: "📱", label: "Mobile app included" },
-            ].map((f) => (
-              <div key={f.label} className="bg-gray-900 border border-white/5 rounded-xl p-3 flex items-center gap-3">
-                <span className="text-xl">{f.icon}</span>
-                <span className="text-sm text-gray-300 font-medium">{f.label}</span>
+        <div className="max-w-5xl mx-auto px-6 py-20">
+          <div className="rounded-2xl border border-brand-800/40 bg-gradient-to-br from-brand-950/60 to-gray-900/60 p-10 md:p-14 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 bg-brand-950 border border-brand-800 text-brand-400 text-xs font-semibold px-3 py-1 rounded-full mb-5 uppercase tracking-widest">
+                🏟️ For venue owners
               </div>
-            ))}
+              <h2 className="text-4xl font-black mb-4 text-white">List your courts.<br />Zero commission.</h2>
+              <p className="text-gray-400 leading-relaxed mb-6">
+                Join the UK's fastest-growing paddle marketplace. Players discover your courts, book instantly, and pay online — while you keep 100% of every booking.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <Link href="/for-venues" className="inline-block bg-brand-500 hover:bg-brand-400 text-white font-bold px-6 py-3 rounded-xl transition-colors">
+                  Get your venue listed →
+                </Link>
+                <Link href="/pricing" className="inline-block bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold px-6 py-3 rounded-xl transition-colors">
+                  See pricing
+                </Link>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { icon: "⚡", label: "Live in under 24h" },
+                { icon: "💰", label: "0% commission" },
+                { icon: "📅", label: "24/7 automated booking" },
+                { icon: "📊", label: "Revenue dashboard" },
+                { icon: "🤝", label: "Player matching" },
+                { icon: "📱", label: "iOS & Android app" },
+              ].map((f) => (
+                <div key={f.label} className="bg-black/20 border border-white/5 rounded-xl p-3 flex items-center gap-3">
+                  <span className="text-xl">{f.icon}</span>
+                  <span className="text-sm text-gray-300 font-medium">{f.label}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
