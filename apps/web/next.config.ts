@@ -1,6 +1,5 @@
 import type { NextConfig } from "next";
 
-const PRODUCTION_DOMAIN = "paddlemate.co.uk";
 
 const securityHeaders = [
   // Force HTTPS for 2 years; include subdomains; submit to browser preload lists
@@ -75,17 +74,6 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  async redirects() {
-    return [
-      // Canonical: redirect www → non-www
-      {
-        source: "/(.*)",
-        has: [{ type: "host", value: `www.${PRODUCTION_DOMAIN}` }],
-        destination: `https://${PRODUCTION_DOMAIN}/:path*`,
-        permanent: true,
-      },
-    ];
-  },
 };
 
 export default nextConfig;
