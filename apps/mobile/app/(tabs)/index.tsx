@@ -6,15 +6,14 @@ import {
 import { useRouter } from "expo-router";
 import { supabase } from "@/lib/supabase";
 import { Colors } from "@/constants/colors";
-import { Search, SlidersHorizontal, Zap } from "lucide-react-native";
+import { Search, Zap } from "lucide-react-native";
 
-// ─── Date strip helpers ──────────────────────────────────────────────────────
 function buildDates() {
   return Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
     d.setDate(d.getDate() + i);
     return {
-      label: i === 0 ? "Today" : i === 1 ? "Tomorrow" : new Intl.DateTimeFormat("en-GB", { weekday: "short" }).format(d),
+      label: i === 0 ? "Today" : i === 1 ? "Tmrw" : new Intl.DateTimeFormat("en-GB", { weekday: "short" }).format(d),
       day: new Intl.DateTimeFormat("en-GB", { day: "numeric" }).format(d),
       value: d.toISOString().split("T")[0],
     };
@@ -35,8 +34,16 @@ const SURFACE_ACCENT: Record<string, string> = {
   grass: "#166534",
   clay: "#9a3412",
   hard: "#1e40af",
-  artificial_grass: "#166534",
+  artificial_grass: "#15803d",
   crystal: "#164e63",
+};
+
+const SURFACE_ICON: Record<string, string> = {
+  grass: "🌿",
+  clay: "🟫",
+  hard: "🔵",
+  artificial_grass: "🟢",
+  crystal: "💠",
 };
 
 export default function CourtsScreen() {
@@ -72,9 +79,7 @@ export default function CourtsScreen() {
 
   const filtered = useMemo(() => {
     let list = courts;
-    if (cityFilter !== "All") {
-      list = list.filter((c) => c.club?.city === cityFilter);
-    }
+    if (cityFilter !== "All") list = list.filter((c) => c.club?.city === cityFilter);
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter(
@@ -104,7 +109,7 @@ export default function CourtsScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.brand} />}
         ListHeaderComponent={
           <View>
-            {/* Top header */}
+            {/* Header */}
             <View style={s.header}>
               <View>
                 <Text style={s.greeting}>{greeting()}</Text>
@@ -115,12 +120,12 @@ export default function CourtsScreen() {
               </View>
             </View>
 
-            {/* Search bar */}
+            {/* Search */}
             <View style={s.searchWrap}>
-              <Search size={16} color={Colors.textMuted} strokeWidth={2} />
+              <Search size={15} color={Colors.textMuted} strokeWidth={2} />
               <TextInput
                 style={s.searchInput}
-                placeholder="Search courts, clubs, city..."
+                placeholder="Search courts, clubs, city…"
                 placeholderTextColor={Colors.textDim}
                 value={search}
                 onChangeText={setSearch}
@@ -136,16 +141,16 @@ export default function CourtsScreen() {
 
             {/* City chips */}
             {cities.length > 2 && (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.filterStrip}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.chipStrip}>
                 {cities.map((city) => {
                   const active = cityFilter === city;
                   return (
                     <TouchableOpacity
                       key={city}
-                      style={[s.filterChip, active && s.cityChipActive]}
+                      style={[s.chip, active && s.chipCityActive]}
                       onPress={() => setCityFilter(city)}
                     >
-                      <Text style={[s.filterChipText, active && s.cityChipTextActive]}>
+                      <Text style={[s.chipText, active && s.chipCityActiveText]}>
                         {city === "All" ? "📍 All cities" : `📍 ${city}`}
                       </Text>
                     </TouchableOpacity>
@@ -155,11 +160,7 @@ export default function CourtsScreen() {
             )}
 
             {/* Date strip */}
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={s.dateStrip}
-            >
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.dateStrip}>
               {DATES.map((d) => {
                 const active = selectedDate === d.value;
                 return (
@@ -175,32 +176,28 @@ export default function CourtsScreen() {
               })}
             </ScrollView>
 
-            {/* Filter chips */}
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={s.filterStrip}
-            >
+            {/* Type filter chips */}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.chipStrip}>
               {TYPE_FILTERS.map((f) => {
                 const active = activeFilter === f;
                 return (
                   <TouchableOpacity
                     key={f}
-                    style={[s.filterChip, active && s.filterChipActive]}
+                    style={[s.chip, active && s.chipTypeActive]}
                     onPress={() => setActiveFilter(f)}
                   >
-                    <Text style={[s.filterChipText, active && s.filterChipTextActive]}>{f}</Text>
+                    <Text style={[s.chipText, active && s.chipTypeActiveText]}>{f}</Text>
                   </TouchableOpacity>
                 );
               })}
             </ScrollView>
 
-            {/* Results label */}
+            {/* Results row */}
             <View style={s.resultsRow}>
+              <View style={s.resultsDot} />
               <Text style={s.resultsLabel}>
                 {filtered.length} court{filtered.length !== 1 ? "s" : ""} available
               </Text>
-              <SlidersHorizontal size={14} color={Colors.textDim} strokeWidth={2} />
             </View>
           </View>
         }
@@ -210,7 +207,10 @@ export default function CourtsScreen() {
             <Text style={s.emptyTitle}>No courts found</Text>
             <Text style={s.emptySub}>Try adjusting your search or filters</Text>
             {(search || activeFilter !== "All" || cityFilter !== "All") && (
-              <TouchableOpacity style={s.clearFiltersBtn} onPress={() => { setSearch(""); setActiveFilter("All"); setCityFilter("All"); }}>
+              <TouchableOpacity
+                style={s.clearFiltersBtn}
+                onPress={() => { setSearch(""); setActiveFilter("All"); setCityFilter("All"); }}
+              >
                 <Text style={s.clearFiltersBtnText}>Clear filters</Text>
               </TouchableOpacity>
             )}
@@ -218,15 +218,18 @@ export default function CourtsScreen() {
         }
         renderItem={({ item }) => {
           const accent = SURFACE_ACCENT[item.surface] ?? "#1f2937";
+          const surfaceIcon = SURFACE_ICON[item.surface] ?? "🎾";
           return (
             <TouchableOpacity
               style={s.card}
               onPress={() => router.push({ pathname: "/court/[id]", params: { id: item.id, date: selectedDate } } as any)}
-              activeOpacity={0.82}
+              activeOpacity={0.83}
             >
               {/* Banner */}
               <View style={[s.cardBanner, { backgroundColor: accent }]}>
-                <Text style={s.cardEmoji}>🎾</Text>
+                {/* Watermark */}
+                <Text style={s.bannerWatermark}>🎾</Text>
+                {/* Top badges */}
                 <View style={s.bannerTopRow}>
                   <View style={s.typePill}>
                     <Text style={s.typePillText}>{item.type}</Text>
@@ -236,31 +239,31 @@ export default function CourtsScreen() {
                     <Text style={s.pricePillUnit}>/hr</Text>
                   </View>
                 </View>
+                {/* Name at bottom of banner */}
+                <View style={s.bannerOverlay}>
+                  <Text style={s.bannerCourtName} numberOfLines={1}>{item.name}</Text>
+                  <Text style={s.bannerClubName} numberOfLines={1}>{item.club?.name}</Text>
+                </View>
               </View>
 
               {/* Body */}
               <View style={s.cardBody}>
-                <View style={s.cardBodyTop}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={s.courtName}>{item.name}</Text>
-                    <Text style={s.clubName}>{item.club?.name}</Text>
-                    <Text style={s.cityText}>📍 {item.club?.city}</Text>
-                  </View>
-                  <TouchableOpacity
-                    style={s.bookBtn}
-                    onPress={() => router.push({ pathname: "/court/[id]", params: { id: item.id, date: selectedDate } } as any)}
-                  >
-                    <Text style={s.bookBtnText}>Book</Text>
-                  </TouchableOpacity>
-                </View>
-
-                <View style={s.surfaceRow}>
-                  <View style={[s.surfacePill, { backgroundColor: accent + "44" }]}>
+                <View style={s.cardMeta}>
+                  <Text style={s.cityText}>📍 {item.club?.city}</Text>
+                  <View style={[s.surfacePill, { backgroundColor: accent + "30" }]}>
+                    <Text style={s.surfaceIcon}>{surfaceIcon}</Text>
                     <Text style={[s.surfacePillText, { color: Colors.brandLight }]}>
                       {item.surface?.replace(/_/g, " ")}
                     </Text>
                   </View>
                 </View>
+                <TouchableOpacity
+                  style={s.bookBtn}
+                  onPress={() => router.push({ pathname: "/court/[id]", params: { id: item.id, date: selectedDate } } as any)}
+                  activeOpacity={0.8}
+                >
+                  <Text style={s.bookBtnText}>Book this court →</Text>
+                </TouchableOpacity>
               </View>
             </TouchableOpacity>
           );
@@ -277,57 +280,59 @@ const s = StyleSheet.create({
 
   // Header
   header: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", paddingHorizontal: 20, paddingTop: 60, paddingBottom: 16 },
-  greeting: { fontSize: 13, color: Colors.textMuted, fontWeight: "600", marginBottom: 2 },
-  headerTitle: { fontSize: 28, fontWeight: "900", color: Colors.text },
-  logoMark: { width: 36, height: 36, borderRadius: 12, backgroundColor: "#052e16", borderWidth: 1, borderColor: "#166534", justifyContent: "center", alignItems: "center" },
+  greeting: { fontSize: 12, color: Colors.textMuted, fontWeight: "600", marginBottom: 2, letterSpacing: 0.3 },
+  headerTitle: { fontSize: 30, fontWeight: "900", color: Colors.text, letterSpacing: -0.5 },
+  logoMark: { width: 38, height: 38, borderRadius: 13, backgroundColor: "#052e16", borderWidth: 1, borderColor: "#166534", justifyContent: "center", alignItems: "center" },
 
   // Search
-  searchWrap: { flexDirection: "row", alignItems: "center", gap: 10, marginHorizontal: 16, marginBottom: 16, backgroundColor: Colors.surface, borderRadius: 16, borderWidth: 1, borderColor: Colors.border, paddingHorizontal: 14, paddingVertical: 12 },
-  searchInput: { flex: 1, fontSize: 15, color: Colors.text, padding: 0 },
-  clearBtn: { fontSize: 14, color: Colors.textMuted },
+  searchWrap: { flexDirection: "row", alignItems: "center", gap: 10, marginHorizontal: 16, marginBottom: 14, backgroundColor: Colors.surface, borderRadius: 16, borderWidth: 1, borderColor: Colors.border, paddingHorizontal: 14, paddingVertical: 12 },
+  searchInput: { flex: 1, fontSize: 14, color: Colors.text, padding: 0 },
+  clearBtn: { fontSize: 13, color: Colors.textMuted },
+
+  // Chips (shared)
+  chipStrip: { paddingHorizontal: 16, gap: 8, paddingBottom: 12 },
+  chip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: Colors.surface, borderWidth: 1, borderColor: Colors.border },
+  chipText: { fontSize: 13, fontWeight: "700", color: Colors.textMuted },
+  chipTypeActive: { backgroundColor: "#052e16", borderColor: "#166534" },
+  chipTypeActiveText: { color: Colors.brand },
+  chipCityActive: { backgroundColor: Colors.surfaceHigh, borderColor: Colors.brand },
+  chipCityActiveText: { color: Colors.text },
 
   // Date strip
-  dateStrip: { paddingHorizontal: 16, gap: 8, paddingBottom: 14 },
-  dateChip: { alignItems: "center", paddingHorizontal: 14, paddingVertical: 10, borderRadius: 14, backgroundColor: Colors.surface, borderWidth: 1, borderColor: Colors.border, minWidth: 62 },
+  dateStrip: { paddingHorizontal: 16, gap: 8, paddingBottom: 12 },
+  dateChip: { alignItems: "center", paddingHorizontal: 14, paddingVertical: 10, borderRadius: 14, backgroundColor: Colors.surface, borderWidth: 1, borderColor: Colors.border, minWidth: 60 },
   dateChipActive: { backgroundColor: Colors.brand, borderColor: Colors.brand },
-  dateChipLabel: { fontSize: 11, fontWeight: "700", color: Colors.textMuted, marginBottom: 2, textTransform: "uppercase" },
-  dateChipLabelActive: { color: "#fff" },
-  dateChipDay: { fontSize: 16, fontWeight: "900", color: Colors.text },
+  dateChipLabel: { fontSize: 10, fontWeight: "700", color: Colors.textMuted, marginBottom: 2, textTransform: "uppercase", letterSpacing: 0.3 },
+  dateChipLabelActive: { color: "rgba(255,255,255,0.85)" },
+  dateChipDay: { fontSize: 17, fontWeight: "900", color: Colors.text },
   dateChipDayActive: { color: "#fff" },
 
-  // Filter chips
-  filterStrip: { paddingHorizontal: 16, gap: 8, paddingBottom: 14 },
-  filterChip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: Colors.surface, borderWidth: 1, borderColor: Colors.border },
-  filterChipActive: { backgroundColor: "#052e16", borderColor: "#166534" },
-  filterChipText: { fontSize: 13, fontWeight: "700", color: Colors.textMuted },
-  filterChipTextActive: { color: Colors.brand },
-  cityChipActive: { backgroundColor: Colors.surfaceHigh, borderColor: Colors.brand },
-  cityChipTextActive: { color: Colors.text },
-
   // Results
-  resultsRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20, paddingBottom: 12 },
+  resultsRow: { flexDirection: "row", alignItems: "center", gap: 7, paddingHorizontal: 20, paddingBottom: 10 },
+  resultsDot: { width: 7, height: 7, borderRadius: 3.5, backgroundColor: Colors.brand },
   resultsLabel: { fontSize: 13, fontWeight: "700", color: Colors.textMuted },
 
   // Card
-  card: { marginHorizontal: 16, marginBottom: 14, backgroundColor: Colors.surface, borderRadius: 22, borderWidth: 1, borderColor: Colors.border, overflow: "hidden" },
-  cardBanner: { height: 130, alignItems: "center", justifyContent: "center", position: "relative" },
-  cardEmoji: { fontSize: 50 },
-  bannerTopRow: { position: "absolute", top: 12, left: 12, right: 12, flexDirection: "row", justifyContent: "space-between" },
-  typePill: { backgroundColor: "rgba(0,0,0,0.5)", borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
+  card: { marginHorizontal: 16, marginBottom: 16, backgroundColor: Colors.surface, borderRadius: 22, borderWidth: 1, borderColor: Colors.border, overflow: "hidden" },
+  cardBanner: { height: 150, position: "relative", overflow: "hidden", justifyContent: "center", alignItems: "center" },
+  bannerWatermark: { fontSize: 100, opacity: 0.12, position: "absolute", right: -16, bottom: -12 },
+  bannerTopRow: { position: "absolute", top: 12, left: 12, right: 12, flexDirection: "row", justifyContent: "space-between", zIndex: 1 },
+  typePill: { backgroundColor: "rgba(0,0,0,0.55)", borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(255,255,255,0.12)" },
   typePillText: { color: "#e5e7eb", fontSize: 11, fontWeight: "700", textTransform: "capitalize" },
   pricePill: { backgroundColor: Colors.brand, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4, flexDirection: "row", alignItems: "baseline", gap: 1 },
   pricePillValue: { color: "#fff", fontSize: 15, fontWeight: "900" },
   pricePillUnit: { color: "rgba(255,255,255,0.75)", fontSize: 10, fontWeight: "600" },
+  bannerOverlay: { position: "absolute", bottom: 0, left: 0, right: 0, backgroundColor: "rgba(0,0,0,0.65)", paddingHorizontal: 14, paddingVertical: 10 },
+  bannerCourtName: { fontSize: 16, fontWeight: "800", color: "#fff", marginBottom: 1 },
+  bannerClubName: { fontSize: 12, color: "rgba(255,255,255,0.6)", fontWeight: "500" },
   cardBody: { padding: 14 },
-  cardBodyTop: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 10 },
-  courtName: { fontSize: 16, fontWeight: "800", color: Colors.text, marginBottom: 2 },
-  clubName: { fontSize: 13, color: Colors.brand, fontWeight: "600", marginBottom: 3 },
-  cityText: { fontSize: 12, color: Colors.textMuted },
-  bookBtn: { backgroundColor: Colors.brand, borderRadius: 14, paddingHorizontal: 16, paddingVertical: 10 },
-  bookBtnText: { color: "#fff", fontSize: 14, fontWeight: "800" },
-  surfaceRow: { flexDirection: "row" },
-  surfacePill: { borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
+  cardMeta: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 12 },
+  cityText: { fontSize: 13, color: Colors.textMuted, fontWeight: "500" },
+  surfacePill: { flexDirection: "row", alignItems: "center", gap: 4, borderRadius: 20, paddingHorizontal: 10, paddingVertical: 5 },
+  surfaceIcon: { fontSize: 12 },
   surfacePillText: { fontSize: 11, fontWeight: "700", textTransform: "capitalize" },
+  bookBtn: { backgroundColor: Colors.brand, borderRadius: 14, paddingVertical: 13, alignItems: "center" },
+  bookBtnText: { color: "#fff", fontSize: 14, fontWeight: "800" },
 
   // Empty
   emptyBox: { alignItems: "center", paddingTop: 60, paddingHorizontal: 40 },

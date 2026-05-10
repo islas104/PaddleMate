@@ -178,7 +178,7 @@ const s = StyleSheet.create({
 
   header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20, paddingTop: 60, paddingBottom: 16 },
   headerLeft: {},
-  headerTitle: { fontSize: 28, fontWeight: "900", color: Colors.text },
+  headerTitle: { fontSize: 30, fontWeight: "900", color: Colors.text, letterSpacing: -0.5 },
   headerSub: { fontSize: 13, color: Colors.textMuted, marginTop: 3 },
   countBadge: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "#052e16", borderRadius: 20, paddingHorizontal: 12, paddingVertical: 7, borderWidth: 1, borderColor: "#166534" },
   countText: { fontSize: 14, fontWeight: "800", color: Colors.brand },

@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, ScrollView
 import { useRouter } from "expo-router";
 import { supabase } from "@/lib/supabase";
 import { Colors } from "@/constants/colors";
-import { Trophy, MapPin, Phone, LogOut, ChevronRight, CalendarDays } from "lucide-react-native";
+import { Trophy, MapPin, LogOut, ChevronRight, CalendarDays, Settings } from "lucide-react-native";
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -29,9 +29,17 @@ export default function ProfileScreen() {
 
   const initial = profile.full_name?.[0]?.toUpperCase() ?? "?";
 
+  const menuItems = [
+    { icon: <CalendarDays size={16} color={Colors.textMuted} strokeWidth={2} />, label: "My Bookings", route: "/(tabs)/bookings" as any },
+    { icon: <Settings size={16} color={Colors.textMuted} strokeWidth={2} />, label: "Settings", route: null },
+  ];
+
   return (
     <ScrollView style={s.container} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
-      {/* Hero */}
+      {/* Green hero background */}
+      <View style={s.heroBg} />
+
+      {/* Avatar + name */}
       <View style={s.hero}>
         <View style={s.avatarRing}>
           <View style={s.avatar}>
@@ -49,54 +57,52 @@ export default function ProfileScreen() {
       {/* Stats */}
       <View style={s.statsRow}>
         <View style={s.statCard}>
-          <CalendarDays size={18} color={Colors.brand} strokeWidth={2} />
           <Text style={s.statValue}>{bookingCount}</Text>
           <Text style={s.statLabel}>Bookings</Text>
         </View>
-        <View style={[s.statCard, s.statCardMid]}>
-          <Text style={s.statEmoji}>🎾</Text>
-          <Text style={s.statValue}>Padel</Text>
-          <Text style={s.statLabel}>Sport</Text>
+        <View style={[s.statCard, s.statCardCenter]}>
+          <Text style={s.statValueEmoji}>🎾</Text>
+          <Text style={s.statLabel}>Padel</Text>
         </View>
         <View style={s.statCard}>
-          <Trophy size={18} color={Colors.brand} strokeWidth={2} />
-          <Text style={s.statValue}>{profile.skill_level ? profile.skill_level.charAt(0).toUpperCase() + profile.skill_level.slice(1) : "—"}</Text>
+          <Text style={s.statValue} numberOfLines={1}>
+            {profile.skill_level
+              ? profile.skill_level.charAt(0).toUpperCase() + profile.skill_level.slice(1)
+              : "—"}
+          </Text>
           <Text style={s.statLabel}>Level</Text>
         </View>
       </View>
 
-      {/* Info */}
-      {(profile.bio || profile.location || profile.phone) && (
+      {/* About section */}
+      {(profile.bio || profile.location) && (
         <View style={s.section}>
           <Text style={s.sectionTitle}>About</Text>
           {profile.bio && <Text style={s.bio}>{profile.bio}</Text>}
           {profile.location && (
             <View style={s.infoRow}>
-              <View style={s.infoIconWrap}>
-                <MapPin size={14} color={Colors.textMuted} strokeWidth={2} />
-              </View>
+              <MapPin size={14} color={Colors.textMuted} strokeWidth={2} />
               <Text style={s.infoValue}>{profile.location}</Text>
-            </View>
-          )}
-          {profile.phone && (
-            <View style={s.infoRow}>
-              <View style={s.infoIconWrap}>
-                <Phone size={14} color={Colors.textMuted} strokeWidth={2} />
-              </View>
-              <Text style={s.infoValue}>{profile.phone}</Text>
             </View>
           )}
         </View>
       )}
 
-      {/* Actions */}
+      {/* Account menu */}
       <View style={s.section}>
         <Text style={s.sectionTitle}>Account</Text>
-        <TouchableOpacity style={s.menuRow} onPress={() => router.push("/(tabs)/bookings" as any)}>
-          <CalendarDays size={16} color={Colors.textMuted} strokeWidth={2} />
-          <Text style={s.menuLabel}>My Bookings</Text>
-          <ChevronRight size={16} color={Colors.textDim} />
-        </TouchableOpacity>
+        {menuItems.map((item, i) => (
+          <TouchableOpacity
+            key={item.label}
+            style={[s.menuRow, i < menuItems.length - 1 && s.menuRowBorder]}
+            onPress={() => item.route && router.push(item.route)}
+            activeOpacity={item.route ? 0.7 : 1}
+          >
+            <View style={s.menuIconWrap}>{item.icon}</View>
+            <Text style={s.menuLabel}>{item.label}</Text>
+            <ChevronRight size={15} color={Colors.textDim} strokeWidth={2} />
+          </TouchableOpacity>
+        ))}
       </View>
 
       {/* Sign out */}
@@ -106,6 +112,7 @@ export default function ProfileScreen() {
           await supabase.auth.signOut();
           router.replace("/(auth)/login" as any);
         }}
+        activeOpacity={0.75}
       >
         <LogOut size={16} color="#f87171" strokeWidth={2} />
         <Text style={s.signOutText}>Sign out</Text>
@@ -118,28 +125,69 @@ const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
   content: { paddingBottom: 48 },
   center: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: Colors.bg },
-  hero: { alignItems: "center", paddingTop: 70, paddingBottom: 28, paddingHorizontal: 24 },
-  avatarRing: { width: 96, height: 96, borderRadius: 48, backgroundColor: "#052e16", borderWidth: 2, borderColor: Colors.brand, justifyContent: "center", alignItems: "center", marginBottom: 14 },
-  avatar: { width: 84, height: 84, borderRadius: 42, backgroundColor: Colors.brandDark, justifyContent: "center", alignItems: "center" },
-  avatarText: { fontSize: 36, fontWeight: "900", color: "#fff" },
-  name: { fontSize: 24, fontWeight: "900", color: Colors.text, marginBottom: 4 },
-  email: { fontSize: 14, color: Colors.textMuted, marginBottom: 12 },
-  levelBadge: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "#052e16", borderWidth: 1, borderColor: "#166534", borderRadius: 20, paddingHorizontal: 14, paddingVertical: 6 },
+
+  heroBg: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 200,
+    backgroundColor: "#052e16",
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
+    borderBottomWidth: 1,
+    borderColor: "#166534",
+  },
+
+  hero: { alignItems: "center", paddingTop: 62, paddingBottom: 24, paddingHorizontal: 24 },
+  avatarRing: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: Colors.brandDark,
+    borderWidth: 3,
+    borderColor: Colors.brand,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 14,
+  },
+  avatar: { width: 86, height: 86, borderRadius: 43, backgroundColor: Colors.brandDark, justifyContent: "center", alignItems: "center" },
+  avatarText: { fontSize: 38, fontWeight: "900", color: "#fff" },
+  name: { fontSize: 24, fontWeight: "900", color: Colors.text, marginBottom: 3, letterSpacing: -0.3 },
+  email: { fontSize: 13, color: Colors.textMuted, marginBottom: 12 },
+  levelBadge: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "#0a2e16", borderWidth: 1, borderColor: "#166534", borderRadius: 20, paddingHorizontal: 14, paddingVertical: 6 },
   levelText: { color: Colors.brand, fontSize: 13, fontWeight: "700", textTransform: "capitalize" },
-  statsRow: { flexDirection: "row", marginHorizontal: 16, marginBottom: 16, gap: 10 },
-  statCard: { flex: 1, backgroundColor: Colors.surface, borderRadius: 20, borderWidth: 1, borderColor: Colors.border, padding: 16, alignItems: "center", gap: 6 },
-  statCardMid: { borderColor: Colors.border },
-  statEmoji: { fontSize: 18 },
-  statValue: { fontSize: 16, fontWeight: "900", color: Colors.text, textTransform: "capitalize" },
-  statLabel: { fontSize: 11, color: Colors.textMuted, fontWeight: "600", textTransform: "uppercase", letterSpacing: 0.5 },
-  section: { marginHorizontal: 16, marginBottom: 12, backgroundColor: Colors.surface, borderRadius: 20, borderWidth: 1, borderColor: Colors.border, padding: 16, gap: 10 },
-  sectionTitle: { fontSize: 13, fontWeight: "800", color: Colors.textMuted, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 4 },
-  bio: { fontSize: 14, color: Colors.textMuted, lineHeight: 20 },
-  infoRow: { flexDirection: "row", alignItems: "center", gap: 10 },
-  infoIconWrap: { width: 28, height: 28, borderRadius: 8, backgroundColor: Colors.surfaceHigh, justifyContent: "center", alignItems: "center" },
+
+  statsRow: { flexDirection: "row", marginHorizontal: 16, marginBottom: 14, gap: 10 },
+  statCard: { flex: 1, backgroundColor: Colors.surface, borderRadius: 18, borderWidth: 1, borderColor: Colors.border, paddingVertical: 16, alignItems: "center", gap: 4 },
+  statCardCenter: { borderColor: Colors.border },
+  statValue: { fontSize: 18, fontWeight: "900", color: Colors.text, textTransform: "capitalize" },
+  statValueEmoji: { fontSize: 20 },
+  statLabel: { fontSize: 10, color: Colors.textMuted, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.5 },
+
+  section: { marginHorizontal: 16, marginBottom: 12, backgroundColor: Colors.surface, borderRadius: 20, borderWidth: 1, borderColor: Colors.border, padding: 16 },
+  sectionTitle: { fontSize: 11, fontWeight: "800", color: Colors.textMuted, textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 12 },
+  bio: { fontSize: 14, color: Colors.textMuted, lineHeight: 21, marginBottom: 8 },
+  infoRow: { flexDirection: "row", alignItems: "center", gap: 8 },
   infoValue: { fontSize: 14, color: Colors.text, fontWeight: "500" },
-  menuRow: { flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 4 },
+
+  menuRow: { flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 12 },
+  menuRowBorder: { borderBottomWidth: 1, borderBottomColor: Colors.border },
+  menuIconWrap: { width: 30, height: 30, borderRadius: 9, backgroundColor: Colors.surfaceHigh, justifyContent: "center", alignItems: "center" },
   menuLabel: { flex: 1, fontSize: 15, color: Colors.text, fontWeight: "600" },
-  signOut: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, marginHorizontal: 16, marginTop: 4, borderWidth: 1, borderColor: "#450a0a", borderRadius: 16, paddingVertical: 15, backgroundColor: "rgba(69,10,10,0.3)" },
+
+  signOut: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    marginHorizontal: 16,
+    marginTop: 4,
+    borderWidth: 1,
+    borderColor: "#450a0a",
+    borderRadius: 16,
+    paddingVertical: 15,
+    backgroundColor: "rgba(69,10,10,0.25)",
+  },
   signOutText: { color: "#f87171", fontSize: 15, fontWeight: "700" },
 });
