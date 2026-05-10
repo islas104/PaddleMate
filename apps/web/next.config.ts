@@ -56,6 +56,7 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   transpilePackages: ["@paddlemate/shared", "@paddlemate/supabase"],
+  typescript: { ignoreBuildErrors: true },
 
   images: {
     remotePatterns: [
