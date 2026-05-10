@@ -16,7 +16,7 @@ const BENEFITS = [
   {
     icon: "💰",
     title: "Zero commission. Ever.",
-    desc: "Unlike Playtomic, we charge a flat monthly fee — not a cut of your revenue. Keep 100% of every booking, no matter how busy you get.",
+    desc: "Unlike other platforms, we charge a flat monthly fee — not a cut of your revenue. Keep 100% of every booking, no matter how busy you get.",
   },
   {
     icon: "📊",
@@ -85,7 +85,7 @@ export default function ForVenuesPage() {
               { v: "24/7", l: "Automated booking" },
               { v: "0%", l: "Commission on bookings" },
               { v: "< 24h", l: "Time to go live" },
-              { v: "40%", l: "Cheaper than Playtomic" },
+              { v: "40%", l: "Cheaper than rivals" },
             ].map((s) => (
               <div key={s.l} className="text-center">
                 <div className="text-3xl font-black text-brand-400">{s.v}</div>
@@ -109,7 +109,7 @@ export default function ForVenuesPage() {
                   "Double-bookings from manual spreadsheets",
                   "Empty courts during off-peak hours",
                   "No visibility into revenue or utilisation",
-                  "Paying Playtomic 10–15% commission per booking",
+                  "Paying 10–15% commission per booking to other platforms",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-3 text-gray-400 text-sm">
                     <span className="text-red-400 mt-0.5 shrink-0">✕</span>
@@ -189,14 +189,14 @@ export default function ForVenuesPage() {
       <section className="border-t border-white/5">
         <div className="max-w-3xl mx-auto px-6 py-20">
           <div className="text-center mb-14">
-            <p className="text-brand-400 text-sm font-semibold uppercase tracking-widest mb-3">vs. Playtomic</p>
+            <p className="text-brand-400 text-sm font-semibold uppercase tracking-widest mb-3">vs. other platforms</p>
             <h2 className="text-4xl font-black">The numbers speak for themselves</h2>
           </div>
           <div className="rounded-2xl border border-white/10 overflow-hidden">
             <div className="grid grid-cols-3 bg-gray-900/80 border-b border-white/10 px-6 py-3">
               <div className="text-xs font-bold text-gray-500 uppercase tracking-wider">Feature</div>
               <div className="text-xs font-bold text-brand-400 uppercase tracking-wider text-center">PaddleMate</div>
-              <div className="text-xs font-bold text-gray-600 uppercase tracking-wider text-center">Playtomic</div>
+              <div className="text-xs font-bold text-gray-600 uppercase tracking-wider text-center">Others</div>
             </div>
             {COMPARE.map((row, i) => (
               <div key={row.feature} className={`grid grid-cols-3 px-6 py-4 ${i % 2 === 0 ? "bg-gray-900/30" : ""} border-b border-white/5 last:border-0`}>

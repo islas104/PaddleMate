@@ -86,7 +86,7 @@ export default function PricingPage() {
             No hidden fees, no setup costs, cancel anytime.
           </p>
           <div className="inline-flex items-center gap-2 mt-5 bg-brand-950/60 border border-brand-800 text-brand-400 text-sm font-semibold px-5 py-2 rounded-full">
-            🏆 Up to 40% cheaper than Playtomic
+            🏆 Up to 40% cheaper than other booking platforms
           </div>
         </div>
 
