@@ -63,15 +63,15 @@ export default async function DashboardPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-10">
+        <div className="grid grid-cols-3 gap-3 mb-10">
           {[
             { label: "Upcoming", value: upcoming.length },
             { label: "Total bookings", value: bookings.length },
             { label: "This month", value: bookings.filter((b) => new Date(b.starts_at).getMonth() === new Date().getMonth()).length },
           ].map((s) => (
-            <div key={s.label} className="bg-gray-900 border border-white/5 rounded-2xl p-5 text-center">
-              <div className="text-3xl font-black text-brand-400">{s.value}</div>
-              <div className="text-xs text-gray-500 mt-1">{s.label}</div>
+            <div key={s.label} className="bg-gray-900 border border-white/5 rounded-2xl p-3 sm:p-5 text-center">
+              <div className="text-2xl sm:text-3xl font-black text-brand-400">{s.value}</div>
+              <div className="text-xs text-gray-500 mt-1 leading-tight">{s.label}</div>
             </div>
           ))}
         </div>

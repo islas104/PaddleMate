@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { MobileMenu } from "./MobileMenu";
 
 export async function Navbar() {
   const supabase = await createClient();
@@ -20,10 +21,11 @@ export async function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-gray-950/80 backdrop-blur-md">
       <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="text-xl font-black text-white tracking-tight">
+        <Link href="/" className="text-xl font-black text-white tracking-tight shrink-0">
           Paddle<span className="text-brand-400">Mate</span>
         </Link>
 
+        {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-8">
           <Link href="/courts" className="text-sm text-gray-400 hover:text-white transition-colors">Courts</Link>
           <Link href="/matches" className="text-sm text-gray-400 hover:text-white transition-colors">Matches</Link>
@@ -34,13 +36,11 @@ export async function Navbar() {
           </Link>
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* Desktop auth */}
+        <div className="hidden md:flex items-center gap-3">
           {user ? (
             <>
-              <Link
-                href="/dashboard"
-                className="text-sm text-gray-400 hover:text-white transition-colors hidden md:block"
-              >
+              <Link href="/dashboard" className="text-sm text-gray-400 hover:text-white transition-colors">
                 Dashboard
               </Link>
               <Link
@@ -65,6 +65,9 @@ export async function Navbar() {
             </>
           )}
         </div>
+
+        {/* Mobile hamburger */}
+        <MobileMenu isLoggedIn={!!user} initial={initial} />
       </div>
     </nav>
   );
