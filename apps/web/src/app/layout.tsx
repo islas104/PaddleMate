@@ -8,7 +8,7 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 export const metadata: Metadata = {
   title: { default: "PaddleMate", template: "%s | PaddleMate" },
   description: "Book courts, find players, and manage clubs — all in one place.",
-  icons: { icon: "/favicon.ico" },
+  icons: { icon: "/icon.svg", shortcut: "/icon.svg", apple: "/icon.svg" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
