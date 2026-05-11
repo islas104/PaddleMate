@@ -113,7 +113,7 @@ export default function PricingPage() {
                   {plan.description}
                 </p>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-black text-white">€{plan.price}</span>
+                  <span className="text-4xl font-black text-white">£{plan.price}</span>
                   <span className={`text-sm ${plan.highlight ? "text-brand-200" : "text-gray-600"}`}>
                     /mo
                   </span>
@@ -144,7 +144,7 @@ export default function PricingPage() {
         </div>
 
         <p className="text-center text-gray-600 text-sm mt-10">
-          All prices exclude VAT · Monthly billing · No setup fees
+          All prices exclude VAT · GBP · Monthly billing · No setup fees
         </p>
       </div>
     </div>

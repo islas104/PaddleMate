@@ -150,7 +150,7 @@ export default function HomePage() {
         <div className="max-w-3xl mx-auto px-6 py-24 text-center">
           <p className="text-brand-400 text-sm font-semibold uppercase tracking-widest mb-4">Pricing</p>
           <h2 className="text-4xl font-black mb-4">Up to 40% cheaper.<br />Zero compromise.</h2>
-          <p className="text-gray-400 mb-8">Plans starting from <span className="text-white font-bold">€19/month</span> — no setup fees, cancel anytime.</p>
+          <p className="text-gray-400 mb-8">Plans starting from <span className="text-white font-bold">£19/month</span> — no setup fees, cancel anytime.</p>
           <Link href="/pricing" className="inline-block bg-white text-gray-900 font-bold px-8 py-4 rounded-xl hover:bg-gray-100 transition-colors">
             See all plans
           </Link>
@@ -158,8 +158,38 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/5 py-8 text-center text-gray-600 text-sm">
-        © {new Date().getFullYear()} PaddleMate. All rights reserved.
+      <footer className="border-t border-white/5 bg-gray-900/20">
+        <div className="max-w-5xl mx-auto px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="col-span-2 md:col-span-1">
+            <p className="font-black text-white text-lg mb-2">PaddleMate</p>
+            <p className="text-gray-500 text-sm leading-relaxed">The UK's smarter padel booking platform.</p>
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">Players</p>
+            <ul className="space-y-2.5 text-sm text-gray-400">
+              <li><Link href="/courts" className="hover:text-brand-400 transition-colors">Browse courts</Link></li>
+              <li><Link href="/clubs" className="hover:text-brand-400 transition-colors">Find clubs</Link></li>
+              <li><Link href="/matches" className="hover:text-brand-400 transition-colors">Join a match</Link></li>
+              <li><Link href="/signup" className="hover:text-brand-400 transition-colors">Create account</Link></li>
+            </ul>
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">Venues</p>
+            <ul className="space-y-2.5 text-sm text-gray-400">
+              <li><Link href="/for-venues" className="hover:text-brand-400 transition-colors">List your courts</Link></li>
+              <li><Link href="/pricing" className="hover:text-brand-400 transition-colors">Pricing</Link></li>
+            </ul>
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">Company</p>
+            <ul className="space-y-2.5 text-sm text-gray-400">
+              <li><Link href="/contact" className="hover:text-brand-400 transition-colors">Contact</Link></li>
+            </ul>
+          </div>
+        </div>
+        <div className="border-t border-white/5 py-5 text-center text-gray-700 text-xs">
+          © {new Date().getFullYear()} PaddleMate. All rights reserved.
+        </div>
       </footer>
     </div>
   );

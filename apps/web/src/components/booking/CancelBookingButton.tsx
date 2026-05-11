@@ -8,13 +8,23 @@ export function CancelBookingButton({ bookingId }: { bookingId: string }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [confirm, setConfirm] = useState(false);
+  const [done, setDone] = useState(false);
 
   async function handleCancel() {
     if (!confirm) { setConfirm(true); return; }
     setLoading(true);
     const supabase = createClient();
     await (supabase.from("bookings") as any).update({ status: "cancelled" }).eq("id", bookingId);
-    router.refresh();
+    setDone(true);
+    setTimeout(() => router.refresh(), 1200);
+  }
+
+  if (done) {
+    return (
+      <span className="text-xs px-3 py-1.5 rounded-lg border border-brand-800 bg-brand-950/50 text-brand-400">
+        Cancelled ✓
+      </span>
+    );
   }
 
   return (

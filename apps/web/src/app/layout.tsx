@@ -7,8 +7,22 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 
 export const metadata: Metadata = {
   title: { default: "PaddleMate", template: "%s | PaddleMate" },
-  description: "Book courts, find players, and manage clubs — all in one place.",
+  description: "Book padel courts, find players at your level, and manage your club — all in one place. The UK's smarter padel booking platform.",
   icons: { icon: "/icon.svg", shortcut: "/icon.svg", apple: "/icon.svg" },
+  metadataBase: new URL("https://www.paddlemate.co.uk"),
+  openGraph: {
+    type: "website",
+    siteName: "PaddleMate",
+    title: "PaddleMate — Book Courts. Find Players. Own the Court.",
+    description: "Book padel courts, find players at your level, and manage your club — all in one place. The UK's smarter padel booking platform.",
+    url: "https://www.paddlemate.co.uk",
+    images: [{ url: "/icon.svg", width: 200, height: 200, alt: "PaddleMate" }],
+  },
+  twitter: {
+    card: "summary",
+    title: "PaddleMate — Book Courts. Find Players.",
+    description: "Book padel courts, find players at your level, and manage your club — all in one place.",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
