@@ -1,5 +1,7 @@
 "use client";
+
 import { useState } from "react";
+import { submitLead } from "@/app/actions/leads";
 
 export function VenueForm() {
   const [form, setForm] = useState({
@@ -7,15 +9,30 @@ export function VenueForm() {
   });
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+  const [error, setError] = useState("");
 
   function set(k: string, v: string) { setForm((f) => ({ ...f, [k]: v })); }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 800));
+    setError("");
+    const result = await submitLead({
+      type: "venue",
+      name: form.contact_name,
+      email: form.email,
+      phone: form.phone,
+      club_name: form.club_name,
+      city: form.city,
+      courts: form.courts,
+      message: form.message,
+    });
     setLoading(false);
-    setDone(true);
+    if (result.success) {
+      setDone(true);
+    } else {
+      setError(result.error ?? "Something went wrong. Please try again.");
+    }
   }
 
   if (done) {
@@ -35,6 +52,11 @@ export function VenueForm() {
 
   return (
     <form onSubmit={submit} className="space-y-4">
+      {error && (
+        <div className="bg-red-950/50 border border-red-800 text-red-400 rounded-xl px-4 py-3 text-sm">
+          {error}
+        </div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className={label}>Club / Venue name *</label>
